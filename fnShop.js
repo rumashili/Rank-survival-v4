@@ -143,6 +143,11 @@ fnShop = {
 	this.displaySeller(myId,"生産")
 	this.displayList(myId,"生産")
   },
+  displayAllList(myId) { //リストのみを表示させます。更新に使います。
+	this.displayList(myId,"採掘")
+	this.displayList(myId,"開拓")
+	this.displayList(myId,"生産")
+  }
 }
 
 

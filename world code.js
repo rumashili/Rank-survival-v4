@@ -3,7 +3,6 @@
 //メインコードは残しておきます。
 
 wcSellData = null
-tradeLoaded = false
 
 skillTree = {}
 skillIdtoName = {}
@@ -32,7 +31,7 @@ function addValue(data, type) {
   for (const [key, value] of Object.entries(skillTree)) {
     if (data[key] !== undefined) {
       if (value.upgradeName === type) {
-        addition += value.upgradeK
+        addition += value.upgradeK * data[key]
       }
     }
   }
@@ -61,32 +60,42 @@ function addXP(myId, category, xp, JP) {
   saveData(myId, myData)
 }
 
+
+
 onPlayerBoughtShopItem = (myId, category, key, item, input) => {
   if (category === "スキルツリー") {
     const sk = item.customTitle
-    const crc = skillTree[sk].costCrc
-    const haveAmt = api.getInventoryItemAmount(myId, crc)
-    const needAmt = skillTree[sk].costAmt
+    if (sk === "プレステージ") {
+        api.sendMessage(myId, [{str: `プレステージを実行しました。`, style: {color: "Lime"}}])
 
-    if (haveAmt >= needAmt) {
-      api.sendMessage(myId, [{str: `スキル [${sk}] を取得しました。`, style: {color: "Lime"}}])
-      api.removeItemName(myId, crc, needAmt)
+        let data = loadData(myId)
+        data.nowId = 0
+        saveData(myId, data)
 
-      let data = loadData(myId)
-      data.nowId = skillNametoId[sk]
-      data[sk] = (data[sk] ?? 0) + 1
-      saveData(myId, data)
-
-      fnDisplaySkillTree(myId, sk)
+        fnDisplaySkillTree(myId, "root")
     } else {
-      api.sendMessage(myId, [{str: `${crc}があと${needAmt - haveAmt}個足りません。`, style: {color: "Orange"}}])
+      const crc = skillTree[sk].costCrc
+      const haveAmt = api.getInventoryItemAmount(myId, crc)
+      const needAmt = skillTree[sk].costAmt
+
+      if (haveAmt >= needAmt) {
+        api.sendMessage(myId, [{str: `スキル [${sk}] を取得しました。`, style: {color: "Lime"}}])
+        api.removeItemName(myId, crc, needAmt)
+
+        let data = loadData(myId)
+        data.nowId = skillNametoId[sk]
+        data[sk] = (data[sk] ?? 0) + 1
+        saveData(myId, data)
+        fnDisplaySkillTree(myId, sk)
+        fnShop.displayAllList(myId)
+      } else {
+        api.sendMessage(myId, [{str: `${crc}があと${needAmt - haveAmt}個足りません。`, style: {color: "Orange"}}])
+      }
     }
   }
 
   if (category.includes("売却")) {
-    /*
-    // （省略：コメント内そのまま）
-    */
+
   }
 
   if (category === "トレード") {
@@ -106,7 +115,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 
       const idx = fnTradeStorage.import(myId, Number(input))
       if (idx === "noItem") {
-        api.sendMessage(myId, [{str: "空気は売れません。", style: {color: "Orange"}}])
+        api.sendMessage(myId, [{str: "出品するアイテムを手に持ってください。", style: {color: "Orange"}}])
         return;
       }
       if (idx === "noSpace") {
@@ -172,10 +181,10 @@ onPlayerLeave = (myId) => {
 }
 
 onPlayerAttemptOpenChest = (myId, x, y, z, moon) => {
-  if (ownerList.includes(api.getEntityName(myId))) return
+  if (ownerList.includes(api.getEntityName(myId))) return;
   if (moon) {
     api.sendMessage(myId, [{str: "このサーバーではムーンストーンチェストは使用できません", style: {color: "Orange"}}])
-    return "preventOpen"
+    return "preventOpen";
   }
 }
 
@@ -193,6 +202,7 @@ onPlayerChat = (myId, msg) => {
   return false;
 }
 
+/*
 onPlayerChangeBlock = (myId, x, y, z, from, to) => {
   if (!ownerList.includes(api.getEntityName(myId))) return
 
@@ -204,3 +214,4 @@ onPlayerChangeBlock = (myId, x, y, z, from, to) => {
     }
   }
 }
+*/

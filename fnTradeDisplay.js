@@ -1,5 +1,5 @@
 fnTradeDisplay = {
-  unit(idx) {
+  unit(idx) { //特定スロットを取得しショップを作成します。
 	const item = fnTradeStorage.load(idx)
 	if (item !== null) {
 	  const state = fnTradeStorage.getState(idx)[idx%18]
@@ -11,7 +11,7 @@ fnTradeDisplay = {
 	  const atr = item.attributes.customAttributes ?? {}
 	  const enc = atr.enchantments ?? {}
 	  const tier = (atr.enchantmentTier ?? "Tier 0").slice(-1)
-	  const color = ["white","#aaaaaa","lime","#55ffff","#ff55ff","#ffff55"][Number(tier)]
+	  const color = ["white","#999999","#55ff00","#55ffff","#dd55ff","#ffff55"][Number(tier)]
 
 	  let desc = []
 	  for (const [eName,eLv] of Object.entries(enc)) {
@@ -32,7 +32,7 @@ fnTradeDisplay = {
 	  api.createShopItem("トレード",String(idx),obj)
     }
   },
-  base () {
+  base () { //必要要素を作成します。
 	api.createShopItem("トレード","description",{
 	  image: "Gold Coin",
 	  customTitle: "トレード",
@@ -51,7 +51,7 @@ fnTradeDisplay = {
 	  }
 	)
   },
-  display () {
+  display () { //必要要素を作成し、すべての出品中商品を表示させます。
 	for (let i = 0; i < 90; i++) {
 	  this.unit(i)
 	}

@@ -1,15 +1,15 @@
 fnTradeStorage = {
-  getData(idx) {
+  getData(idx) { //チェストの位置を取得します。
     const tmp = Math.floor(idx/36)
     return {pos:[33+tmp, 15, 631], slot: idx%36};
   },
-  getPos(idx) {
+  getPos(idx) { //コードブロックの位置を取得します。
 	const x = Math.floor(idx/36)
 	const y = Math.floor(idx/18)%2
 	return [33+x, 17-y, 631];
   },
 
-  find() {
+  find() { //コードブロックから空きスロットを取得します。
 	for (let i = 0; i < 5; i++) {
 	  const state = this.getState(i*18)
 	  for (let j = 0; j < 18; j++) {
@@ -19,7 +19,7 @@ fnTradeStorage = {
 	return "noSpace";
   },
 
-  getState(idx) {
+  getState(idx) { //特定スロットの状態を取得します。ただし、返されるのはスロットの情報を含む長さ18の配列です。
 	const pos = this.getPos(idx)
 	let data = api.getBlockData(...pos);
 	if (data === undefined) {
@@ -38,16 +38,16 @@ fnTradeStorage = {
 
 	return data;
   },
-  setState(idx,data) {
+  setState(idx,data) { //コードブロックに情報を書き込みます。getStateとセットで使うことが大半です。
 	const pos = this.getPos(idx)
 	api.setBlockData(...pos, {persisted:{shared:{text:JSON.stringify(data)}}})
   },
 
-  load(idx) {
+  load(idx) { //チェストのアイテムを取得します。
     const data = this.getData(idx)
     return api.getStandardChestItemSlot(data.pos, data.slot)
   },
-  save(idx, item) {
+  save(idx, item) { //チェストにアイテムを格納します。
     const data = this.getData(idx)
     api.setStandardChestItemSlot(data.pos, data.slot, item.name, item.amount, undefined, item.attributes)
   },
@@ -75,12 +75,13 @@ fnTradeStorage = {
 	api.setItemSlot(myId, nowSlot, "Air")
 	return idx;
   },
-  export(myId,idx,hasMoney) {
+  export(myId,idx,hasMoney) { //
 	if (api.inventoryIsFull(myId)) {
 	  return {type:"full"};
 	}
 
 	let state = this.getState(idx)
+	const price = state[idx%18].price
 
 	if (state[idx%18] === null) {
 	  return {type:"noItem"}
@@ -88,11 +89,13 @@ fnTradeStorage = {
 	if (state[idx%18].type === "soldOut") {
 	  return {type:"noItem"}
 	}
+	if (price > hasMoney) {
+	  return {type:"notEnough"}
+	}
 
 	const playerId = api.getPlayerIdFromDbId(state[idx%18].dbId);
 	const myName = api.getEntityName(myId)
 	const item = this.load(idx)
-	const price = state[idx%18].price
 	let resultType = "success"
 
 	if (playerId === null) { //オフライン状態

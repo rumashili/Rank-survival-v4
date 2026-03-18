@@ -12,7 +12,7 @@ function loadData(myId) {
 }
 
 fnShop = {
-  addValue(myId) {
+  addValue(myId) { //スキルによる上昇効果を取得します。
 	const data = loadData(myId)
 	let addition = {}
 	for (const [key, value] of Object.entries(skillTree)) {
@@ -24,7 +24,7 @@ fnShop = {
 	return addition;
   },
 
-  displaySelector(myId,category) {
+  displaySelector(myId,category) { //売却するブロックを選択するitemです。
 	api.createShopItemForPlayer(myId, "売却:"+category, "selector", {
 	  image: "",
 	  customTitle: "ブロックを選択",
@@ -37,7 +37,7 @@ fnShop = {
 	  buyButtonText: "選択"}
 	)
   },
-  displaySeller(myId,category) {
+  displaySeller(myId,category) { //売却するitemです。
 	api.createShopItemForPlayer(myId, "売却:"+category, "seller", {
 	  image: "",
 	  customTitle: "売却",
@@ -50,7 +50,7 @@ fnShop = {
 	  buyButtonText: "売却"}
 	)
   },
-  displayList(myId,category) {
+  displayList(myId,category) { //各商品の売却額を表示させます。
 	const extra = this.addValue(myId) ?? {}
 	let desc = [{str:"黄色い文字",style:{color:"Gold"}},{str:"はスキルによる上昇効果です。\n"}]
 	for (const name of (wcSellData[category].list ?? [])) {
@@ -75,16 +75,16 @@ fnShop = {
 	)
   },
 
-  base(category) {
+  base(category) { //addを実行する前に読んでください。初期化用関数です。
 	wcSellData[category] = {list:[]}
   },
-  add(category, item, name, value) {
+  add(category, item, name, value) { //売却可能商品を追加します。
 	wcSellData[category].list.push(name)
 	wcSellData.dictionary[item] = name	
 	wcSellData.dictionary[name] = item
 	wcSellData[category][item] = {name:name, value:value}
   },
-  reset() {
+  reset() { //データを用意する関数です。
 	wcSellData.dictionary = {}
 
 	this.base("採掘")
@@ -132,7 +132,7 @@ fnShop = {
 	this.add("生産","Melon Slice","メロンの薄切り",3)
 	this.add("生産","Pumpkin","かぼちゃ",3)
   },
-  displayAll(myId) {
+  displayAll(myId) { //全てを表示させます。
 	this.displaySelector(myId,"採掘")
 	this.displaySeller(myId,"採掘")
 	this.displayList(myId,"採掘")
@@ -147,5 +147,4 @@ fnShop = {
 
 
 fnShop.reset()
-fnShop.addValue(myId)
 fnShop.displayAll(myId)

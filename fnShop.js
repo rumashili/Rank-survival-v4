@@ -1,4 +1,6 @@
 wcSellData = {"dictionary":{},"採掘":{},"開拓":{},"生産":{}}
+selectionBlock = {}
+
 
 function loadData(myId) {
   const tmp = api.getMoonstoneChestItemSlot(myId, 0)
@@ -25,10 +27,11 @@ fnShop = {
   },
 
   displaySelector(myId,category) { //売却するブロックを選択するitemです。
+	const selectedBlock = selectionBlock[myId][category] ?? wcSellData[category].list[0] ?? "";
 	api.createShopItemForPlayer(myId, "売却:"+category, "selector", {
 	  image: "",
 	  customTitle: "ブロックを選択",
-	  description: `売却するブロックを選択。`,
+	  description: `売却するブロックを選択。\n現在選択されているブロック: ${selectedBlock}`,
 	  userInput: {
 		type: "dropdown",
 		dropdownOptions: (wcSellData[category].list ?? []),

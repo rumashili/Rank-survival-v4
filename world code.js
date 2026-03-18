@@ -95,7 +95,60 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
   }
 
   if (category.includes("売却")) {
+    const ctgr = category.replace("売却:","")
+    if (key === "selector") {
+      selectionBlock[myId][ctgr] = input;
+      api.sendMessage(myId, [{str: `売却アイテムを${input}に設定しました。`, style: {color: "Lime"}}])
+    } else if (key === "seller") {
+      const sellBlock = selectedBlock[myId][ctgr] ?? wcSellData[ctgr].name ?? null;
+      if (sellBlock === null) {
+        api.sendMessage(myId, [{str: `ブロックを選択してください。`, style: {color: "Orange"}}])
+        return;
+      }
+      const sellItem = wcSellData.dictionary[sellBlock]
 
+      const hasAmt = api.getInventoryItemAmount(myId, sellItem)
+      if (hasAmt === 0) {
+        api.sendMessage(myId, [{str: `${sellBlock}を持っていません。`, style: {color: "Orange"}}])
+        return;
+      }
+
+      const sellAmt = Number(input)
+      const data = loadData(myId)
+      const extraG = addValue(data, sellItem) ?? 0
+
+      let removeAmt;
+      if (sellAmt > hasAmt) {
+        removeAmt = hasAmt;
+      } else {
+        removeAmt = sellAmt;
+      }
+
+      api.removeItemName(myId, sellItem, removeAmt)
+
+      const unitPrice = wcSellData[ctgr][sellItem].value + extraG
+      const gainMoney = removeAmt * unitPrice
+
+      data.money = (data.money ?? 0) + gainMoney
+
+      saveData(myId, data)
+      api.sendMessage(myId, [
+        {str: `${sellBlock}を売って${gainMoney}Gを得ました。( ${unitPrice}G/個 )`, style: {color: "Lime"}}
+      ])
+
+
+      if (ctgr.includes("採掘")) {
+        addXP(myId, "mine", gainMoney, "採掘")
+      } else if (ctgr.includes("開拓")) {
+        addXP(myId, "adv", gainMoney, "開拓")
+      } else {
+        addXP(myId, "farm", gainMoney, "農業")
+      }
+
+      addXP(myId, "now", Math.floor(gainMoney / 2), "トータル")
+
+      fnMainUI(myId)
+    }
   }
 
   if (category === "トレード") {

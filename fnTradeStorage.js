@@ -81,7 +81,7 @@ fnTradeStorage = {
 	}
 
 	let state = this.getState(idx)
-	const price = state[idx%18].price
+	const price = state[idx%18].price //danger
 
 	if (state[idx%18] === null) {
 	  return {type:"noItem"}

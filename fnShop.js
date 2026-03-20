@@ -128,10 +128,10 @@ fnShop = {
 	this.displayList(myId,"開拓",myData)
 	this.displayList(myId,"生産",myData)
   },
-  displayAllSelector(myId,myData) { //リストのみを表示させます。更新に使います。
-	this.displaySelector(myId,"採掘",myData)
-	this.displaySelector(myId,"開拓",myData)
-	this.displaySelector(myId,"生産",myData)
+  displayAllSelector(myId) { //リストのみを表示させます。更新に使います。
+	this.displaySelector(myId,"採掘")
+	this.displaySelector(myId,"開拓")
+	this.displaySelector(myId,"生産")
   },
   displayAll(myId,myData) { //全てを表示させます。
 	this.displaySelector(myId,"採掘")

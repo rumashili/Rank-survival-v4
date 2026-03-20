@@ -1,9 +1,7 @@
 fnReincarnation = { //markar
   reset(myData) {
 	for (const [key, value] of Object.entries(skillNametoId)) {
-	  if (myData[key] !== undefined) {
 		delete myData[key]
-	  }
 	}
 	for (const ctgr of ["mine","adv","farm","now"]) {
 	  myData[ctgr+"Level"] = 1
@@ -20,8 +18,7 @@ fnReincarnation = { //markar
 	  buyButtonText: "実行"}
 	)
   },
-  displayDescription(myId) {
-	const myData = this.load(myId)
+  displayDescription(myId, myData) {
 	const reinAmt = myData.reincarnation ?? 0
 	const rankId = Math.max(1,Math.min((reinAmt+2)*10,rankList.length))-1;
 	let desc = [`ランクと各種レベル,スキルツリーがリセットされます。\n売却額が${reinAmt+2}倍になり、より高いランクに到達可能になります。\nランクの横にローマ数字が付き、転生数を表します。\n[`]

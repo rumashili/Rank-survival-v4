@@ -188,7 +188,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 		myDataStorage.save(myData,1)
 		fnDisplaySkillTree(myId, (skillIdtoName[myData.nowId ?? 0]))
 		fnShop.displayAllList(myId,myData)
-		fnReincarnation.displayDescription(myId)
+		fnReincarnation.displayDescription(myId, myData)
 		fnMainUI(myId,myData)
 
         api.sendMessage(myId, [{str: `転生を実行しました。`, style: {color: "Lime"}}])

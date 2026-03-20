@@ -108,7 +108,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 	  }
       selectionBlock[myId][ctgr] = input;
       api.sendMessage(myId, [{str: `売却アイテムを${input}に設定しました。`, style: {color: "Lime"}}])
-	  fnShop.displayAllSelector(myId,myData)
+	  fnShop.displayAllSelector(myId)
     } else if (key === "seller") {
 	  if (selectionBlock[myId] === undefined) {
 		selectionBlock[myId] = {

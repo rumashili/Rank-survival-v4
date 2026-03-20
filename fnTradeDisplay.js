@@ -59,4 +59,4 @@ fnTradeDisplay = {
   }
 }
 
-fnTradeDisplay.display()
+if (2 === 1) {}

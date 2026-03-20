@@ -55,18 +55,19 @@ fnShop = {
   },
   displayList(myId,category) { //各商品の売却額を表示させます。
 	const extra = this.addValue(myId) ?? {}
-	let desc = [{str:"黄色い文字",style:{color:"Gold"}},{str:"はスキルによる上昇効果です。\n"}]
+	const rein = (loadData(myId).reincarnation ?? 0) + 1
+	let desc = [`白い文字は実際の売却価格です。\n`,{str:"黄色い文字",style:{color:"Gold"}},`はスキルによる上昇効果です。\n転生によって `,{str:`x${rein}`,style:{color:"#00ffff"}},`の上昇を得ています。\n`]
 	for (const name of (wcSellData[category].list ?? [])) {
 	  const item = wcSellData.dictionary[name]
 	  const value = wcSellData[category][item].value
-	  let price = extra[item]
+	  let price = extra[item] ?? 0
+	  desc.push(`\n`)
 	  desc.push({icon:item})
-	  if (price === undefined) {
-		desc.push({str:`${name}: ${value} G | XP\n`})
-	  } else {
-		desc.push({str:`${name}: ${value + price} (`})
-		desc.push({str:`+${price}`,style:{color:"Gold"}})
-		desc.push({str:`) G | XP\n`})
+	  desc.push(`${name}: ${(value+price)*rein} G | XP`)
+	  if (price !== 0) {
+		desc.push(`(`)
+		desc.push({str:`+${price*rein}`,style:{color:"Gold"}})
+		desc.push(`)`)
 	  }
 	}
 	api.createShopItemForPlayer(myId, "売却:"+category, "list", {
@@ -106,34 +107,44 @@ fnShop = {
 	this.add("採掘","Moonstone","ムーンストーン",250)
 	this.add("採掘","Magma","マグマブロック",6)
 
-	this.add("開拓","Dirt","土",1)
-	this.add("開拓","Sand","砂",1)
-	this.add("開拓","Clay","粘土",2)
-	this.add("開拓","Chalk","チョーク",2)
-	this.add("開拓","Snow","雪",1)
-	this.add("開拓","Maple Log","メープルの原木",10)
-	this.add("開拓","Maple Leaves","メープルの葉",2)
-	this.add("開拓","Cotton","綿",1)
-	this.add("開拓","Brown Mushroom","茶色のきのこ",4)
-	this.add("開拓","Red Mushroom","赤のきのこ",4)
-	this.add("開拓","Rotten Flesh","腐肉",5)
-	this.add("開拓","Bone","骨",5)
+	this.add("開拓","Dirt","土",3)
+	this.add("開拓","Sand","砂",3)
+	this.add("開拓","Clay","粘土",5)
+	this.add("開拓","Chalk","チョーク",5)
+	this.add("開拓","Snow","雪",4)
+	this.add("開拓","Maple Log","メープルの原木",30)
+	this.add("開拓","Maple Leaves","メープルの葉",3)
+	this.add("開拓","Cotton","綿",3)
+	this.add("開拓","Brown Mushroom","茶色のきのこ",6)
+	this.add("開拓","Red Mushroom","赤のきのこ",6)
+	this.add("開拓","Rotten Flesh","腐肉",16)
+	this.add("開拓","Bone","骨",16)
 
-	this.add("生産","Apple","りんご",4)
-	this.add("生産","Plum","すもも",4)
-	this.add("生産","Pear","なし",4)
-	this.add("生産","Cherry","さくらんぼ",4)
-	this.add("生産","Mango","マンゴー",4)
-	this.add("生産","Coconut","ココナッツ",4)
-	this.add("生産","Banana","バナナ",3)
-	this.add("生産","Wheat","小麦",6)
-	this.add("生産","Rice","米",6)
-	this.add("生産","Raw Potato","じゃがいも",6)
-	this.add("生産","Carrot","にんじん",6)
-	this.add("生産","Beetroot","ビートルート",6)
-	this.add("生産","Watermelon Slice","スイカの薄切り",3)
-	this.add("生産","Melon Slice","メロンの薄切り",3)
-	this.add("生産","Pumpkin","かぼちゃ",3)
+	this.add("生産","Apple","りんご",20)
+	this.add("生産","Plum","すもも",20)
+	this.add("生産","Pear","なし",20)
+	this.add("生産","Cherry","さくらんぼ",20)
+	this.add("生産","Mango","マンゴー",20)
+	this.add("生産","Coconut","ココナッツ",20)
+	this.add("生産","Banana","バナナ",6)
+	this.add("生産","Wheat","小麦",8)
+	this.add("生産","Rice","米",8)
+	this.add("生産","Raw Potato","じゃがいも",15)
+	this.add("生産","Carrot","にんじん",15)
+	this.add("生産","Beetroot","ビートルート",15)
+	this.add("生産","Watermelon Slice","スイカの薄切り",6)
+	this.add("生産","Melon Slice","メロンの薄切り",6)
+	this.add("生産","Pumpkin","かぼちゃ",10)
+  },
+  displayAllList(myId) { //リストのみを表示させます。更新に使います。
+	this.displayList(myId,"採掘")
+	this.displayList(myId,"開拓")
+	this.displayList(myId,"生産")
+  },
+  displayAllSelector(myId) { //リストのみを表示させます。更新に使います。
+	this.displaySelector(myId,"採掘")
+	this.displaySelector(myId,"開拓")
+	this.displaySelector(myId,"生産")
   },
   displayAll(myId) { //全てを表示させます。
 	this.displaySelector(myId,"採掘")
@@ -146,13 +157,8 @@ fnShop = {
 	this.displaySeller(myId,"生産")
 	this.displayList(myId,"生産")
   },
-  displayAllList(myId) { //リストのみを表示させます。更新に使います。
-	this.displayList(myId,"採掘")
-	this.displayList(myId,"開拓")
-	this.displayList(myId,"生産")
-  }
 }
 
-
 fnShop.reset()
-fnShop.displayAll(myId)
+
+if (2 === 1) {}

@@ -114,4 +114,4 @@ fnTradeStorage = {
   }
 }
 
-fnTradeStorage.getState(0)
+if (2 === 1) {}

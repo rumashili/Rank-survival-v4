@@ -23,6 +23,9 @@ fnAddSkillTreeItem = function add(myId, key, item, sort, canBuy = true) {
   if (canBuy === true) {
     obj.buyButtonText = [{icon: item.costCrc}, {str: ` x${item.costAmt}`}]
   }
+  if (item.name === "プレステージ") {
+    obj.buyButtonText = "実行"	
+  }
 
   api.createShopItemForPlayer(
     myId,
@@ -52,5 +55,4 @@ fnDisplaySkillTree = function display(myId, now) {
   }
 }
 
-const myData = loadData(myId)
-fnDisplaySkillTree(myId, (skillIdtoName[myData.nowId ?? 0]))
+if (2 === 1) {}

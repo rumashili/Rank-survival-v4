@@ -153,7 +153,35 @@ rankList = [
   addRank("✦ポラリス", "#ffffff"),
   addRank("✦シリウス", "#ccf2ff"),
 
-  addRank("✦シリウス", "#ccf2ff"),
-  addRank("✦シリウス", "#ccf2ff"),
-  addRank("✦シリウス", "#ccf2ff"),
+  addRank("✦アンドロメダ", "#ff99ff", "#66ccff"),
+  addRank("✦コズミック", "#3300ff", "#00ffff"),
+  addRank("✦ノヴァ", "#ffcc00", "#ff3300"),
+  addRank("✦スーパーノヴァ", "#ffffff", "#ff5500"),
+  addRank("✦ガンマバースト", "#00ffff", "#ff00ff"),
+  addRank("✦ビッグバン", "#ffffff", "#000000"),
+  addRank("アセンション", "#ff5555", "#5555ff"),
+
+  addRank("⬢ヘスティア", "#ffddaa"),
+  addRank("⬢デメテル", "#99cc66"),
+  addRank("⬢ヘルメス", "#66ccff"),
+  addRank("⬢アポロン", "#ffcc66"),
+  addRank("⬢アルテミス", "#99ffcc"),
+  addRank("⬢アフロディーテ", "#ff99cc"),
+  addRank("⬢アレス", "#ff4444"),
+  addRank("⬢ヘラ", "#ffccff"),
+  addRank("⬢アテナ", "#ccccff"),
+  addRank("⬢ポセイドン", "#3399ff"),
+  addRank("⬢ハデス", "#663399"),
+  addRank("⬢ゼウス", "#ffff00", "#ffffff"),
+
+  addRank("⬢スサノオ", "#3366ff", "#00ffff"),
+  addRank("⬢ツクヨミ", "#ccccff", "#6666ff"),
+  addRank("⬢アマテラス", "#ffffcc", "#ffffff"),
+
+  addRank("⬢クロノス", "#bbbbbb", "#444444"),
+  addRank("⬢ガイア", "#66cc66", "#228833"),
+  addRank("⬢ウラノス", "#66aaff", "#0033aa"),
+  addRank("⬢カオス", "#000000", "#5500aa"),
 ]
+
+if (2 === 3) {}

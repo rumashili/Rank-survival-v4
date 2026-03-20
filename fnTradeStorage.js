@@ -89,7 +89,7 @@ fnTradeStorage = {
 	if (state[idx%18].type === "soldOut") {
 	  return {type:"noItem"}
 	}
-	if (price > hasMoney) {
+	if (BigNum(price).gt(BigNum(hasMoney))) {
 	  return {type:"notEnough"}
 	}
 

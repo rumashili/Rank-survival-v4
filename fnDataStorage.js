@@ -54,10 +54,9 @@ obj.lastX -= 400000
 obj.lastY -= 400000
 obj.lastZ -= 400000
 
-let myData = dataStorage(myId)
-myData.save(obj,1)
+let myDataStorage = dataStorage(myId)
+myDataStorage.save(obj,1)
 
 //お金の加算(このloadにしてからめっちゃコードが短くなった。)
-const dataObject = myData.load(1)
-const str = BigNum(dataObject.money)
-api.log(str.add(BigNum(10000000000000000)).toString())
+const myData = myDataStorage.load(1)
+myData.money = BigNum(myData.money).add(BigNum(10000000000000000)).toString()

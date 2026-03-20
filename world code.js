@@ -150,11 +150,11 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 
       api.removeItemName(myId, sellItem, removeAmt)
 
-	  const rein = myData.reincarnation ?? 1
+	  const rein = (myData.reincarnation ?? 0) + 1
       const unitPrice = (wcSellData[ctgr][sellItem].value + extraG) * rein
       const gainMoney = removeAmt * unitPrice
 
-      myData.money = Math.min(9999999999, (myData.money ?? 0) + gainMoney)
+      myData.money = BigNum(myData.money ?? 0).add(BigNum(gainMoney)).toString()
 
       api.sendMessage(myId, [
         {str: `${sellBlock}を売って${gainMoney}Gを得ました。( ${unitPrice}G/個 )`, style: {color: "Lime"}}
@@ -249,13 +249,13 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
       const playerId = reqMoney.playerId
 	  let playerDataStorage = dataStorage(playerId)
 	  let playerData = myDataStorage.load(1)
-      playerData.money = (playerData.money ?? 0) + reqMoney.price
+      playerData.money = BigNum(playerData.money ?? 0).add(BigNum(reqMoney.price)).toString()
       playerData.tradingAmt = Math.max(1, ((playerData.tradingAmt ?? 1) - 1))
       playerDataStorage.save(playerData, 1)
 	  fnMainUI(playerId,playerData)
     }
 
-    myData.money = hasMoney - reqMoney.price
+	myData.money = BigNum(hasMoney).add(BigNum(reqMoney.price)).toString()
 	myDataStorage.save(myData, 1)
 
     api.deleteShopItem(category, key)

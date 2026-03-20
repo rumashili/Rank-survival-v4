@@ -1,26 +1,13 @@
 wcSellData = {"dictionary":{},"採掘":{},"開拓":{},"生産":{}}
 selectionBlock = {}
 
-
-function loadData(myId) {
-  const tmp = api.getMoonstoneChestItemSlot(myId, 0)
-  let data;
-  if (tmp == null) {
-	data = {}
-  } else {
-	data = tmp.attributes.customAttributes.enchantments
-  }
-  return data;
-}
-
 fnShop = {
-  addValue(myId) { //スキルによる上昇効果を取得します。
-	const data = loadData(myId)
+  addValue(myData) { //スキルによる上昇効果を取得します。 //markar
 	let addition = {}
 	for (const [key, value] of Object.entries(skillTree)) {
-	  if (data[key] !== undefined) {
+	  if (myData[key] !== undefined) {
 		const tmp = addition[value.upgradeName] ?? 0
-		addition[value.upgradeName] = tmp + value.upgradeK * data[key]
+		addition[value.upgradeName] = tmp + value.upgradeK * myData[key]
 	  }
 	}
 	return addition;
@@ -53,9 +40,9 @@ fnShop = {
 	  buyButtonText: "売却"}
 	)
   },
-  displayList(myId,category) { //各商品の売却額を表示させます。
-	const extra = this.addValue(myId) ?? {}
-	const rein = (loadData(myId).reincarnation ?? 0) + 1
+  displayList(myId,category,myData) { //各商品の売却額を表示させます。
+	const extra = this.addValue(myData) ?? {}
+	const rein = (myData.reincarnation ?? 0) + 1 //markar
 	let desc = [`白い文字は実際の売却価格です。\n`,{str:"黄色い文字",style:{color:"Gold"}},`はスキルによる上昇効果です。\n転生によって `,{str:`x${rein}`,style:{color:"#00ffff"}},`の上昇を得ています。\n`]
 	for (const name of (wcSellData[category].list ?? [])) {
 	  const item = wcSellData.dictionary[name]
@@ -136,26 +123,26 @@ fnShop = {
 	this.add("生産","Melon Slice","メロンの薄切り",6)
 	this.add("生産","Pumpkin","かぼちゃ",10)
   },
-  displayAllList(myId) { //リストのみを表示させます。更新に使います。
-	this.displayList(myId,"採掘")
-	this.displayList(myId,"開拓")
-	this.displayList(myId,"生産")
+  displayAllList(myId,myData) { //リストのみを表示させます。更新に使います。
+	this.displayList(myId,"採掘",myData)
+	this.displayList(myId,"開拓",myData)
+	this.displayList(myId,"生産",myData)
   },
-  displayAllSelector(myId) { //リストのみを表示させます。更新に使います。
-	this.displaySelector(myId,"採掘")
-	this.displaySelector(myId,"開拓")
-	this.displaySelector(myId,"生産")
+  displayAllSelector(myId,myData) { //リストのみを表示させます。更新に使います。
+	this.displaySelector(myId,"採掘",myData)
+	this.displaySelector(myId,"開拓",myData)
+	this.displaySelector(myId,"生産",myData)
   },
-  displayAll(myId) { //全てを表示させます。
+  displayAll(myId,myData) { //全てを表示させます。
 	this.displaySelector(myId,"採掘")
 	this.displaySeller(myId,"採掘")
-	this.displayList(myId,"採掘")
+	this.displayList(myId,"採掘",myData)
 	this.displaySelector(myId,"開拓")
 	this.displaySeller(myId,"開拓")
-	this.displayList(myId,"開拓")
+	this.displayList(myId,"開拓",myData)
 	this.displaySelector(myId,"生産")
 	this.displaySeller(myId,"生産")
-	this.displayList(myId,"生産")
+	this.displayList(myId,"生産",myData)
   },
 }
 

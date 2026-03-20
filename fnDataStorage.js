@@ -15,7 +15,7 @@ function dataStorage (Id, type = "UTF-8",maxLength = 1972) {
 
   let maxLen = Math.min(1968,Math.max(1,Math.floor(maxLength)));
   if (type === "UTF-16") {
-	maxLen = Math.floor(divLen*0.5) //UTF-8では1972,UTF-16では986が限界らしい?
+	maxLen = Math.floor(maxLen*0.5) //UTF-8では1972,UTF-16では986が限界らしい?
   }
 
   function save(data, slot = 0) {
@@ -46,10 +46,18 @@ function dataStorage (Id, type = "UTF-8",maxLength = 1972) {
 }
 
 
-//使用例。
-const obj = "これはほぼ全ての形式を保存できるセーブロードシステムです。\nただし、JSON stringify/parseを使用しているため、どうしても重くなってしまいました。\n最初にloadを行い、最後にsaveを行うことをお勧めします。\n最大保存可能な文字長は1972文字です。"
 
-myData = dataStorage(myId,"UTF-8")
-myData.save(obj)
-const msg = myData.load()
-api.sendMessage(myId,msg)
+//引き継ぎのコード
+let obj = loadData(myId)
+obj.money = String(obj.money)
+obj.lastX -= 400000
+obj.lastY -= 400000
+obj.lastZ -= 400000
+
+let myData = dataStorage(myId)
+myData.save(obj,1)
+
+//お金の加算(このloadにしてからめっちゃコードが短くなった。)
+const dataObject = myData.load(1)
+const str = BigNum(dataObject.money)
+api.log(str.add(BigNum(10000000000000000)).toString())

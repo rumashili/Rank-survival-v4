@@ -14,21 +14,6 @@ skillRequiers = {}
 
 const ownerList = ["knkt_kabosu","rewr3"]
 
-function saveData(myId, data) {
-  api.setMoonstoneChestItemSlot(myId, 0, "Gold Trophy", 1, {"customAttributes": {"enchantments": data}})
-}
-
-function loadData(myId) {
-  const tmp = api.getMoonstoneChestItemSlot(myId, 0)
-  let data;
-  if (tmp == null) {
-    data = {}
-  } else {
-    data = tmp.attributes.customAttributes.enchantments
-  }
-  return data;
-}
-
 function addValue(data, type) {
   let addition = 0
   for (const [key, value] of Object.entries(skillTree)) {
@@ -41,8 +26,7 @@ function addValue(data, type) {
   return addition;
 }
 
-function addXP(myId, category, xp, JP) {
-  let myData = loadData(myId)
+function addXP(myId, category, xp, JP, myData) {
   let nowLevel = myData[category + "Level"] ?? 1
   let maxXP = 500 * nowLevel**2
   let nowXP = (myData[category + "XP"] ?? 0) + xp
@@ -60,7 +44,6 @@ function addXP(myId, category, xp, JP) {
 
   myData[category + "Level"] = nowLevel
   myData[category + "XP"] = nowXP
-  saveData(myId, myData)
 }
 
 function toRoman(num) {
@@ -78,17 +61,16 @@ function toRoman(num) {
   return result;
 }
 
-
-
 onPlayerBoughtShopItem = (myId, category, key, item, input) => {
+  let myDataStorage = dataStorage(myId)
+  let myData = myDataStorage.load(1)
   if (category === "スキルツリー") {
     const sk = item.customTitle
     if (sk === "プレステージ") {
         api.sendMessage(myId, [{str: `プレステージを実行しました。`, style: {color: "Lime"}}])
 
-        let data = loadData(myId)
-        data.nowId = 0
-        saveData(myId, data)
+        myData.nowId = 0
+        myDataStorage.save(myData, 1)
 
         fnDisplaySkillTree(myId, "root")
     } else {
@@ -100,16 +82,16 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
         api.sendMessage(myId, [{str: `スキル [${sk}] を取得しました。`, style: {color: "Lime"}}])
         api.removeItemName(myId, crc, needAmt)
 
-        let data = loadData(myId)
-        data.nowId = skillNametoId[sk]
-        data[sk] = (data[sk] ?? 0) + 1
-        saveData(myId, data)
+        myData.nowId = skillNametoId[sk]
+        myData[sk] = (myData[sk] ?? 0) + 1
+        myDataStorage.save(myData, 1)
         fnDisplaySkillTree(myId, sk)
-        fnShop.displayAllList(myId)
+        fnShop.displayAllList(myId,myData)
       } else {
         api.sendMessage(myId, [{str: `${crc}があと${needAmt - haveAmt}個足りません。`, style: {color: "Orange"}}])
       }
     }
+	return;
   }
 
   if (category.includes("売却")) {
@@ -126,7 +108,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 	  }
       selectionBlock[myId][ctgr] = input;
       api.sendMessage(myId, [{str: `売却アイテムを${input}に設定しました。`, style: {color: "Lime"}}])
-	  fnShop.displayAllSelector(myId)
+	  fnShop.displayAllSelector(myId,myData)
     } else if (key === "seller") {
 	  if (selectionBlock[myId] === undefined) {
 		selectionBlock[myId] = {
@@ -157,8 +139,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 	  } else {
 		sellAmt = Number(sellAmt)
 	  }
-      const data = loadData(myId)
-      const extraG = addValue(data, sellItem) ?? 0
+      const extraG = addValue(myData, sellItem) ?? 0
 
       let removeAmt;
       if (sellAmt > hasAmt) {
@@ -169,35 +150,33 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 
       api.removeItemName(myId, sellItem, removeAmt)
 
-	  const rein = data.reincarnation ?? 1
+	  const rein = myData.reincarnation ?? 1
       const unitPrice = (wcSellData[ctgr][sellItem].value + extraG) * rein
       const gainMoney = removeAmt * unitPrice
 
-      data.money = Math.min(9999999999, (data.money ?? 0) + gainMoney)
+      myData.money = Math.min(9999999999, (myData.money ?? 0) + gainMoney)
 
-      saveData(myId, data)
       api.sendMessage(myId, [
         {str: `${sellBlock}を売って${gainMoney}Gを得ました。( ${unitPrice}G/個 )`, style: {color: "Lime"}}
       ])
 
 
       if (ctgr.includes("採掘")) {
-        addXP(myId, "mine", gainMoney, "採掘")
+        addXP(myId, "mine", gainMoney, "採掘", myData)
       } else if (ctgr.includes("開拓")) {
-        addXP(myId, "adv", gainMoney, "開拓")
+        addXP(myId, "adv", gainMoney, "開拓", myData)
       } else {
-        addXP(myId, "farm", gainMoney, "農業")
+        addXP(myId, "farm", gainMoney, "農業", myData)
       }
 
-      addXP(myId, "now", Math.max(1,Math.floor(gainMoney / 2)), "トータル")
-
-      fnMainUI(myId)
+      addXP(myId, "now", Math.max(1,Math.floor(gainMoney / 2)), "トータル", myData)
+	  myDataStorage.save(myData, 1)
+      fnMainUI(myId,myData)
     }
   }
 
   if (category === "転生") {
 	if (key === "trigger") {
-	  const myData = loadData(myId)
 	  const mineLv = myData.mineLevel ?? 1
 	  const advLv = myData.advLevel ?? 1
 	  const farmLv = myData.farmLevel ?? 1
@@ -205,11 +184,13 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 	  const rqLv = (rein+1)*10
 
 	  if (mineLv >= rqLv && advLv >= rqLv && farmLv >= rqLv) {
-		fnReincarnation.reset(myId)
+		fnReincarnation.reset(myData)
+		myDataStorage.save(myData,1)
 		fnDisplaySkillTree(myId, (skillIdtoName[myData.nowId ?? 0]))
-		fnShop.displayAllList(myId)
+		fnShop.displayAllList(myId,myData)
 		fnReincarnation.displayDescription(myId)
-		fnMainUI(myId)		
+		fnMainUI(myId,myData)
+
         api.sendMessage(myId, [{str: `転生を実行しました。`, style: {color: "Lime"}}])
 	  } else {
         api.sendMessage(myId, [{str: `条件を満たしていません。\n採掘,開拓,生産レベルが全て${rqLv}以上であることが求められます。`, style: {color: "Orange"}}])		
@@ -218,8 +199,6 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
   }
 
   if (category === "トレード") {
-    let myData = loadData(myId)
-
     if (key === "export") {
       if (input === "") {
         api.sendMessage(myId, [{str: "半角数字のみで金額を指定してください。", style: {color: "Orange"}}])
@@ -243,7 +222,8 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
       }
 
       myData.tradingAmt = tradingAmt + 1
-      saveData(myId, myData)
+      myDataStorage.save(myData, 1)
+
 
       fnTradeDisplay.unit(idx)
       return;
@@ -267,17 +247,19 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
 
     if (reqMoney.type === "success") {
       const playerId = reqMoney.playerId
-      let playerData = loadData(playerId)
+	  let playerDataStorage = dataStorage(playerId)
+	  let playerData = myDataStorage.load(1)
       playerData.money = (playerData.money ?? 0) + reqMoney.price
       playerData.tradingAmt = Math.max(1, ((playerData.tradingAmt ?? 1) - 1))
-      saveData(playerId, playerData)
+      playerDataStorage.save(playerData, 1)
+	  fnMainUI(playerId,playerData)
     }
 
     myData.money = hasMoney - reqMoney.price
-    saveData(myId, myData)
+	myDataStorage.save(myData, 1)
 
     api.deleteShopItem(category, key)
-    fnMainUI(myId)
+    fnMainUI(myId,myData)
   }
 }
 
@@ -292,11 +274,12 @@ onPlayerJoin = (myId) => {
 
 onPlayerLeave = (myId) => {
   const pos = api.getPosition(myId).map(x => Math.floor(x) + 400000)
-  let data = loadData(myId)
-  data.lastX = pos[0]
-  data.lastY = pos[1]
-  data.lastZ = pos[2]
-  saveData(myId, data)
+  let myDataStorage = dataStorage(myId)
+  let myData = myDataStorage.load(1)
+  myData.lastX = pos[0]
+  myData.lastY = pos[1]
+  myData.lastZ = pos[2]
+  myDataStorage.save(myData, 1)
 }
 
 onPlayerAttemptOpenChest = (myId, x, y, z, moon) => {
@@ -308,7 +291,8 @@ onPlayerAttemptOpenChest = (myId, x, y, z, moon) => {
 }
 
 onPlayerChat = (myId, msg) => {
-  const myData = loadData(myId)
+  let myDataStorage = dataStorage(myId)
+  let myData = myDataStorage.load(1)
   const myName = api.getEntityName(myId)
   const rein = myData.reincarnation ?? 0
 

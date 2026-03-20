@@ -1,21 +1,5 @@
-fnReincarnation = {
-  save(myId,data) {
-	api.setMoonstoneChestItemSlot(myId, 0, "Gold Trophy", 1, {"customAttributes": {"enchantments": data}})
-  },
-  load(myId) {
-	const tmp = api.getMoonstoneChestItemSlot(myId, 0)
-	let data;
-
-	if (tmp == null) {
-	  data = {}
-	} else {
-	  data = tmp.attributes.customAttributes.enchantments
-	}
-
-	return data;
-  },
-  reset(myId) {
-	let myData = this.load(myId)
+fnReincarnation = { //markar
+  reset(myData) {
 	for (const [key, value] of Object.entries(skillNametoId)) {
 	  if (myData[key] !== undefined) {
 		delete myData[key]
@@ -27,7 +11,6 @@ fnReincarnation = {
 	}
 	myData.nowId = 0
 	myData.reincarnation = (myData.reincarnation ?? 0) + 1
-	this.save(myId,myData)
   },
   displayTrigger() {
 	api.createShopItem("転生", "trigger", {

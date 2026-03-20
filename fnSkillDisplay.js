@@ -1,16 +1,3 @@
-function loadData(myId) {
-  const tmp = api.getMoonstoneChestItemSlot(myId, 0)
-  let data;
-
-  if (tmp == null) {
-    data = {}
-  } else {
-    data = tmp.attributes.customAttributes.enchantments
-  }
-
-  return data;
-}
-
 fnAddSkillTreeItem = function add(myId, key, item, sort, canBuy = true) {
   let obj = {
     customTitle: item.name,

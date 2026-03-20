@@ -1,17 +1,4 @@
-function loadData(myId) {
-  const tmp = api.getMoonstoneChestItemSlot(myId, 0)
-  let data;
-
-  if (tmp == null) {
-    data = {}
-  } else {
-    data = tmp.attributes.customAttributes.enchantments
-  }
-
-  return data;
-}
-
-fnMainUI = function (myId, displayId = myId) {
+fnMainUI = function (myId, myData, displayId = myId) { //markar
   function toRoman(num) {
 	const map = [[1000, "M"],[900, "CM"],[500, "D"],[400, "CD"],[100, "C"],[90, "XC"],[50, "L"],[40, "XL"],[10, "X"],[9, "IX"],[5, "V"],[4, "IV"],[1, "I"]];
 
@@ -33,7 +20,6 @@ fnMainUI = function (myId, displayId = myId) {
     return "[" + "|".repeat(per) + " ".repeat(dence - per) + "]"
   }
 
-  const myData = loadData(myId)
   const hasMoney = myData.money ?? 0
   const rein = myData.reincarnation ?? 0
 

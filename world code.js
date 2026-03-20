@@ -248,7 +248,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
     if (reqMoney.type === "success") {
       const playerId = reqMoney.playerId
 	  let playerDataStorage = dataStorage(playerId)
-	  let playerData = myDataStorage.load(1)
+	  let playerData = playerDataStorage.load(1)
       playerData.money = BigNum(playerData.money ?? 0).add(BigNum(reqMoney.price)).toString()
       playerData.tradingAmt = Math.max(1, ((playerData.tradingAmt ?? 1) - 1))
       playerDataStorage.save(playerData, 1)
@@ -273,7 +273,7 @@ onPlayerJoin = (myId) => {
 }
 
 onPlayerLeave = (myId) => {
-  const pos = api.getPosition(myId).map(x => Math.floor(x) + 400000)
+  const pos = api.getPosition(myId).map(x => Math.floor(x))
   let myDataStorage = dataStorage(myId)
   let myData = myDataStorage.load(1)
   myData.lastX = pos[0]

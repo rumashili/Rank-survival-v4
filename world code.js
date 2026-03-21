@@ -273,7 +273,7 @@ onPlayerJoin = (myId) => {
 }
 
 onPlayerLeave = (myId) => {
-  const pos = api.getPosition(myId).map(x => Math.floor(x))
+  const pos = api.getPosition(myId).map(x => Math.floor(x*100)/100)
   let myDataStorage = dataStorage(myId)
   let myData = myDataStorage.load(1)
   myData.lastX = pos[0]

@@ -57,14 +57,14 @@ function getTotalXP(nowLevel, nowXP) {
 
 function addXP(category, xp, myData) {
   let nowLevel = myData[category + "Level"] ?? 1
-  let maxXP = 500 * nowLevel**2
+  let maxXP = 300 * nowLevel**2
   let nowXP = (myData[category + "XP"] ?? 0) + xp
 
   if (nowXP >= maxXP) {
     while (nowXP >= maxXP) {
       nowXP -= maxXP
       nowLevel++
-      maxXP = 500 * nowLevel**2
+      maxXP = 300 * nowLevel**2
     }
   }
 

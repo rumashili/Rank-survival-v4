@@ -15,12 +15,12 @@ fnMainUI = function (myId, myData, displayId = myId) { //markar
   }
 
   function progress(level, nowXP, dence = 20) {
-    const maxXP = 500 * level**2;
+    const maxXP = 300 * level**2;
     const per = Math.min(dence, Math.max(0, Math.floor(nowXP / maxXP * dence)));
     return "[" + "|".repeat(per) + " ".repeat(dence - per) + "]"
   }
 
-  const hasMoney = myData.money ?? 0
+  const hasMoney = myData.money ?? "0"
   const rein = myData.reincarnation ?? 0
 
   let rankId = (myData.nowLevel ?? 1) - 1
@@ -55,11 +55,11 @@ fnMainUI = function (myId, myData, displayId = myId) { //markar
   }
   txt.push({str: ` ]\nレベル: Lv.${nowLevel}\n`})
 
-  txt.push({str: `${nowXP} ${progress(nowLevel, nowXP)} ${500 * nowLevel**2}\n\n`})
+  txt.push({str: `${nowXP} ${progress(nowLevel, nowXP)} ${300 * nowLevel**2}\n\n`})
 
-  txt.push({str: `採掘: Lv.${mineLevel}\n${mineXP} ${progress(mineLevel, mineXP)} ${500 * mineLevel**2}\n`})
-  txt.push({str: `開拓: Lv.${advLevel}\n${advXP} ${progress(advLevel, advXP)} ${500 * advLevel**2}\n`})
-  txt.push({str: `農業: Lv.${farmLevel}\n${farmXP} ${progress(farmLevel, farmXP)} ${500 * farmLevel**2}\n`})
+  txt.push({str: `採掘: Lv.${mineLevel}\n${mineXP} ${progress(mineLevel, mineXP)} ${300 * mineLevel**2}\n`})
+  txt.push({str: `開拓: Lv.${advLevel}\n${advXP} ${progress(advLevel, advXP)} ${300 * advLevel**2}\n`})
+  txt.push({str: `農業: Lv.${farmLevel}\n${farmXP} ${progress(farmLevel, farmXP)} ${300 * farmLevel**2}\n`})
 
   api.setClientOption(displayId, "RightInfoText", txt)
 }

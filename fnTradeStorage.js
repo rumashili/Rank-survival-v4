@@ -81,11 +81,11 @@ fnTradeStorage = {
 	}
 
 	let state = this.getState(idx)
-	const price = state[idx%18].price //danger
 
 	if (state[idx%18] === null) {
 	  return {type:"noItem"}
 	}
+	const price = state[idx%18].price
 	if (state[idx%18].type === "soldOut") {
 	  return {type:"noItem"}
 	}

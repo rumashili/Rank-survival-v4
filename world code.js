@@ -28,7 +28,7 @@ function addValue(data, type) {
 
 function addXP(myId, category, xp, JP, myData) {
   let nowLevel = myData[category + "Level"] ?? 1
-  let maxXP = 500 * nowLevel**2
+  let maxXP = 300 * nowLevel**2
   let nowXP = (myData[category + "XP"] ?? 0) + xp
 
   api.sendMessage(myId, [{str: `${xp}の${JP}XPを得ました!`, style: {color: "Lime"}}])
@@ -37,7 +37,7 @@ function addXP(myId, category, xp, JP, myData) {
     while (nowXP >= maxXP) {
       nowXP -= maxXP
       nowLevel++
-      maxXP = 500 * nowLevel**2
+      maxXP = 300 * nowLevel**2
     }
     api.sendMessage(myId, [{str: `${JP}のレベルが上がりました!`, style: {color: "Lime"}}])
   }
@@ -154,7 +154,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
       const unitPrice = (wcSellData[ctgr][sellItem].value + extraG) * rein
       const gainMoney = removeAmt * unitPrice
 
-      myData.money = BigNum(myData.money ?? 0).add(BigNum(gainMoney)).toString()
+      myData.money = BigNum(myData.money ?? "0").add(BigNum(gainMoney)).toString()
 
       api.sendMessage(myId, [
         {str: `${sellBlock}を売って${gainMoney}Gを得ました。( ${unitPrice}G/個 )`, style: {color: "Lime"}}
@@ -229,7 +229,7 @@ onPlayerBoughtShopItem = (myId, category, key, item, input) => {
       return;
     }
 
-    const hasMoney = myData.money ?? 0
+    const hasMoney = myData.money ?? "0"
     const reqMoney = fnTradeStorage.export(myId, Number(key), hasMoney)
 
     if (reqMoney.type === "full") {

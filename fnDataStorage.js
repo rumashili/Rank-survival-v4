@@ -48,15 +48,44 @@ function dataStorage (Id, type = "UTF-8",maxLength = 1972) {
 
 
 //引き継ぎのコード
+
+function getTotalXP(nowLevel, nowXP) {
+  const n = nowLevel - 1
+  const sum = n * (n + 1) * (2 * n + 1) / 6
+  return 500 * sum + nowXP
+}
+
+function addXP(category, xp, myData) {
+  let nowLevel = myData[category + "Level"] ?? 1
+  let maxXP = 500 * nowLevel**2
+  let nowXP = (myData[category + "XP"] ?? 0) + xp
+
+  if (nowXP >= maxXP) {
+    while (nowXP >= maxXP) {
+      nowXP -= maxXP
+      nowLevel++
+      maxXP = 500 * nowLevel**2
+    }
+  }
+
+  myData[category + "Level"] = nowLevel
+  myData[category + "XP"] = nowXP
+}
+
 let obj = loadData(myId)
-obj.money = String(obj.money)
-obj.lastX -= 400000
-obj.lastY -= 400000
-obj.lastZ -= 400000
-
-let myDataStorage = dataStorage(myId)
-myDataStorage.save(obj,1)
-
-//お金の加算(このloadにしてからめっちゃコードが短くなった。)
-const myData = myDataStorage.load(1)
-myData.money = BigNum(myData.money).add(BigNum(10000000000000000)).toString()
+if (api.getMoonstoneChestItemSlot(myId, 0) !== null) {
+  let myDataStorage = dataStorage(myId)
+  
+  obj.money = String(obj.money)
+  obj.lastX -= 400000
+  obj.lastY -= 400000
+  obj.lastZ -= 400000
+  for (const ctgr of ["now","mine","adv","farm"]) {
+	const total = getTotalXP(obj[ctgr + "Level"], obj[ctgr + "XP"])
+	obj[ctgr + "Level"] = 1
+	obj[ctgr + "XP"] = 0
+	addXP(ctgr, total, obj)
+  }
+  myDataStorage.save(obj,1)
+  api.setMoonstoneChestItemSlot(myId, 0, "Air")
+}

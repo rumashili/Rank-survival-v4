@@ -111,13 +111,11 @@ BigNum = function(str = "0") {
     let res = new Array(a.length + bb.length).fill(0);
 
     for (let i = 0; i < a.length; i++) {
-      let carry = 0;
       for (let j = 0; j < bb.length; j++) {
-        let cur = res[i + j] + a[i] * bb[j] + carry;
-        carry = Math.floor(cur / BASE);
-        res[i + j] = cur % BASE;
+        let product = a[i] * bb[j] + res[i + j];
+        res[i + j] = product % BASE;
+        res[i + j + 1] += Math.floor(product / BASE); // 次の桁に直接足し込む
       }
-      if (carry) res[i + bb.length] += carry;
     }
 
     a = trim(res);
@@ -158,10 +156,8 @@ BigNum = function(str = "0") {
     add,
     sub,
     mul,
-    mulNum
+    mulNum,
   };
 
   return api;
 }
-
-if (1 === 2) {}

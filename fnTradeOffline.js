@@ -1,6 +1,6 @@
 fnTradeOffline = function (myId) {
   const myDbId = api.getPlayerDbId(myId)
-  let money = 0
+  let money = "0"
   for (let i = 0; i < 5; i++) {
 	let state = fnTradeStorage.getState(i*18)
 	for (let j = 0; j < 18; j++) {
